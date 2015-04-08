@@ -2,7 +2,7 @@ package com.example.testhttp;
 
 /*
  * 
- * 
+ * 服务端添加
  * */
 import android.os.Parcel;
 import android.os.Parcelable;
