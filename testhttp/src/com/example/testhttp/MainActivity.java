@@ -1,8 +1,10 @@
 package com.example.testhttp;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.apache.http.Header;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,7 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 public class MainActivity extends Activity
 {
@@ -38,48 +41,86 @@ public class MainActivity extends Activity
 		progressBar1 = (ProgressBar) findViewById(R.id.progressBar1);
 		button1 = (Button) findViewById(R.id.button1);
 		
-		final AsyncHttpClient client = new AsyncHttpClient();
-		
-		button1.setOnClickListener(new OnClickListener(){
-
+		button1.setOnClickListener(new OnClickListener()
+		{
 			@Override
 			public void onClick(View v)
 			{
-				client.get("http://218.29.72.146:8090/app/FoodAndDrug.apk", new FileAsyncHttpResponseHandler(MainActivity.this) {
+				AsyncHttpClient client = new AsyncHttpClient();
+				
+				File f1 = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/IMG_20141115_083233.jpg");
+				File f2 = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/IMG_20141123_132950.jpg");
+				
+				RequestParams params = new RequestParams();
+				params.put("username", "—ÓŒ¿ÃŒ");
+				params.put("password", "123456");
+				try
+				{
+					params.put("file1", f1);
+					params.put("file2", f2);
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+				
+				client.post("http://192.168.2.176:8080/AsbFramework/test/test.do", params, new JsonHttpResponseHandler()
+				{
 					@Override
-					public void onFailure(int arg0, Header[] arg1, Throwable arg2,
-							File arg3)
+					public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
 					{
-						// TODO Auto-generated method stub
-					System.out.println("onFailure");	
+						System.out.println("onFailure");
 					}
 
 					@Override
-					public void onSuccess(int arg0, Header[] arg1, File arg2)
+					public void onSuccess(int statusCode, Header[] headers, JSONObject response)
 					{
-						System.out.println("onSuccess");
-						System.out.println(arg2.getAbsolutePath());
-					}
-
-					@Override
-					protected File getTargetFile()
-					{
-						System.out.println("getTargetFile");
-						File f = new File(Environment.getExternalStorageDirectory().getPath() + "/FoodAndDrug.apk");
-						return f;
+						System.out.println(response.toString());
 					}
 
 					@Override
 					public void onProgress(int bytesWritten, int totalSize)
 					{
-						super.onProgress(bytesWritten, totalSize);
-						System.out.println(bytesWritten + "/" + totalSize);
-						textView1.setText(bytesWritten + "%");
+						textView1.setText(bytesWritten + "b");
 						progressBar1.setMax(totalSize);
 						progressBar1.setProgress(bytesWritten);
-					} 
+					}
 				});
-			}});
+				
+				
+//				client.get("http://www.baidu.com/img/baidu_jgylogo3.gif", new FileAsyncHttpResponseHandler(MainActivity.this)
+//				{
+//					@Override
+//					public void onFailure(int arg0, Header[] arg1, Throwable arg2, File arg3)
+//					{
+//						System.out.println("onFailure");
+//					}
+//
+//					@Override
+//					public void onSuccess(int arg0, Header[] arg1, File arg2)
+//					{
+//						System.out.println("onSuccess");
+//						System.out.println(arg2.getAbsolutePath());
+//					}
+//
+//					@Override
+//					protected File getTargetFile()
+//					{
+//						System.out.println("getTargetFile");
+//						File f = new File(Environment.getExternalStorageDirectory().getPath() + "/baidu_jgylogo3.gif");
+//						return f;
+//					}
+//
+//					@Override
+//					public void onProgress(int bytesWritten, int totalSize)
+//					{
+//						textView1.setText(bytesWritten + "b");
+//						progressBar1.setMax(totalSize);
+//						progressBar1.setProgress(bytesWritten);
+//					}
+//				});
+			}
+		});
 		
 		
 	}
